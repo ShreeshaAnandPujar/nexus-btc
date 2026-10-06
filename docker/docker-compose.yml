@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  nexus-btc:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: nexus-btc-surveillance
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - NEXUS_OFFLINE_MODE=true
+      - NEXUS_ENV=production
+      - NEXUS_HOST=0.0.0.0
+      - NEXUS_PORT=8000
+    volumes:
+      - nexus-data:/app/data
+      - ../geo:/app/geo:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - isolated-forensics
+
+volumes:
+  nexus-data:
+    driver: local
+
+networks:
+  isolated-forensics:
+    internal: true  # True air-gapped isolation with zero outbound internet access
+    driver: bridge

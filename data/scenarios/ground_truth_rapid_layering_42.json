@@ -1,0 +1,10 @@
+{
+  "scenario_type": "RAPID_LAYERING",
+  "seed": 42,
+  "ground_truth_illicit": true,
+  "expected_motifs": [
+    "RAPID_LAYERING"
+  ],
+  "total_records": 4,
+  "generated_at": "2026-10-06T12:44:43.183691+00:00"
+}

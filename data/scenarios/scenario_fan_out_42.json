@@ -1,0 +1,44 @@
+[
+  {
+    "txid": "23afc000bde580b9d9346b8a8766a57d8e11da18b94b4898e31177cdcc97867b",
+    "ts": "2026-03-04T13:00:00+00:00",
+    "src_ip": "192.0.2.88",
+    "dst_ip": "8.8.8.8",
+    "src_port": 8333,
+    "dst_port": 8333,
+    "input_addresses": [
+      "1FanOutSrc_42"
+    ],
+    "output_addresses": [
+      "1FanOutDest_42_0",
+      "1FanOutDest_42_1",
+      "1FanOutDest_42_2",
+      "1FanOutDest_42_3",
+      "1FanOutDest_42_4",
+      "1FanOutDest_42_5",
+      "1FanOutDest_42_6",
+      "1FanOutDest_42_7",
+      "1FanOutDest_42_8",
+      "1FanOutDest_42_9"
+    ],
+    "input_amounts": [
+      10.0
+    ],
+    "output_amounts": [
+      0.9999,
+      0.9999,
+      0.9999,
+      0.9999,
+      0.9999,
+      0.9999,
+      0.9999,
+      0.9999,
+      0.9999,
+      0.9999
+    ],
+    "fee": 0.0005,
+    "script_type": "P2TR",
+    "country": "DE",
+    "asn": 3320
+  }
+]

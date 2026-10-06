@@ -1,0 +1,23 @@
+<transactions>
+  <transaction>
+    <txid>9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e</txid>
+    <timestamp>2026-03-04T10:15:30Z</timestamp>
+    <src_ip>185.107.56.114</src_ip>
+    <dst_ip>1.1.1.31</dst_ip>
+    <src_port>13313</src_port>
+    <dst_port>8333</dst_port>
+    <inputs>
+      <input address="333BPkWNpg9RxEhKc2HJpXfmN8rTL" amount="0.12106055"/>
+      <input address="3qajeKsnLvSo6UHUkDMLD5oaP1fd58B" amount="0.06749838"/>
+    </inputs>
+    <outputs>
+      <output address="16j491bAQ23rPPSZpronypRQmi8TdKKVJN" amount="0.07812167"/>
+      <output address="bc1qqnmnvxD3ypzUKtdJtZ9YL68nSh7RfD" amount="0.00448860"/>
+      <output address="bc1qWuQQejcwmWkZg7Sd6BegTVyUfV3n8" amount="0.10591941"/>
+    </outputs>
+    <fee>0.00002925</fee>
+    <script_type>P2PKH</script_type>
+    <country>NL</country>
+    <asn>49544</asn>
+  </transaction>
+</transactions>

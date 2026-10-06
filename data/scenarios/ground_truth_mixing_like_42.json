@@ -1,0 +1,10 @@
+{
+  "scenario_type": "MIXING_LIKE",
+  "seed": 42,
+  "ground_truth_illicit": true,
+  "expected_motifs": [
+    "MIXING_LIKE"
+  ],
+  "total_records": 1,
+  "generated_at": "2026-10-06T12:44:43.182540+00:00"
+}
