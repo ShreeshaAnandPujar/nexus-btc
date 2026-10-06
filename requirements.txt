@@ -1,0 +1,2 @@
+# NEXUS-BTC Master Dependencies
+-r backend/requirements.txt
