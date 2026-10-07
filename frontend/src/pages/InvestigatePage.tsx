@@ -16,16 +16,39 @@ export const InvestigatePage: React.FC<InvestigatePageProps> = ({
   const [selectedTx, setSelectedTx] = useState<any | null>(null);
   const [isSearching, setIsSearching] = useState(false);
 
+  React.useEffect(() => {
+    loadRecent();
+  }, []);
+
+  const loadRecent = async () => {
+    setIsSearching(true);
+    try {
+      const data = await fetchTransactions(undefined, 25);
+      setResults(data);
+      if (data.length > 0) {
+        const detail = await fetchTransactionDetail(data[0].txid);
+        setSelectedTx(detail);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchTerm.trim()) return;
+    if (!searchTerm.trim()) {
+      loadRecent();
+      return;
+    }
 
     setIsSearching(true);
     setSelectedTx(null);
     try {
       const data = await fetchTransactions(searchTerm.trim(), 20);
       setResults(data);
-      if (data.length === 1) {
+      if (data.length > 0) {
         const detail = await fetchTransactionDetail(data[0].txid);
         setSelectedTx(detail);
       }
@@ -44,6 +67,20 @@ export const InvestigatePage: React.FC<InvestigatePageProps> = ({
       console.error(e);
     }
   };
+
+  const handleSelectAddress = (addr: string) => {
+    setSearchTerm(addr);
+    setIsSearching(true);
+    fetchTransactions(addr, 20)
+      .then((data) => {
+        setResults(data);
+        if (data.length > 0) {
+          fetchTransactionDetail(data[0].txid).then(setSelectedTx);
+        }
+      })
+      .finally(() => setIsSearching(false));
+  };
+
 
   return (
     <div className="page-scrollable">
@@ -201,8 +238,13 @@ export const InvestigatePage: React.FC<InvestigatePageProps> = ({
                 </div>
                 <div style={{ maxHeight: '160px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {selectedTx.input_addresses.map((addr: string, i: number) => (
-                    <div key={i} style={{ background: '#090d16', padding: '6px 8px', borderRadius: '4px', fontSize: '11px', fontFamily: 'monospace' }}>
-                      <div style={{ color: '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis' }}>{addr}</div>
+                    <div
+                      key={i}
+                      onClick={() => handleSelectAddress(addr)}
+                      title="Click to search address"
+                      style={{ background: '#090d16', padding: '6px 8px', borderRadius: '4px', fontSize: '11px', fontFamily: 'monospace', cursor: 'pointer' }}
+                    >
+                      <div style={{ color: '#38bdf8', overflow: 'hidden', textOverflow: 'ellipsis' }}>{addr}</div>
                       <div style={{ color: '#94a3b8', fontSize: '10px' }}>
                         {selectedTx.input_amounts[i] ? `${selectedTx.input_amounts[i].toFixed(4)} BTC` : ''}
                       </div>
@@ -217,14 +259,20 @@ export const InvestigatePage: React.FC<InvestigatePageProps> = ({
                 </div>
                 <div style={{ maxHeight: '160px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {selectedTx.output_addresses.map((addr: string, i: number) => (
-                    <div key={i} style={{ background: '#090d16', padding: '6px 8px', borderRadius: '4px', fontSize: '11px', fontFamily: 'monospace' }}>
-                      <div style={{ color: '#cbd5e1', overflow: 'hidden', textOverflow: 'ellipsis' }}>{addr}</div>
+                    <div
+                      key={i}
+                      onClick={() => handleSelectAddress(addr)}
+                      title="Click to search address"
+                      style={{ background: '#090d16', padding: '6px 8px', borderRadius: '4px', fontSize: '11px', fontFamily: 'monospace', cursor: 'pointer' }}
+                    >
+                      <div style={{ color: '#10b981', overflow: 'hidden', textOverflow: 'ellipsis' }}>{addr}</div>
                       <div style={{ color: '#94a3b8', fontSize: '10px' }}>
                         {selectedTx.output_amounts[i] ? `${selectedTx.output_amounts[i].toFixed(4)} BTC` : ''}
                       </div>
                     </div>
                   ))}
                 </div>
+
               </div>
             </div>
           </div>

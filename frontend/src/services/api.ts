@@ -133,6 +133,14 @@ export async function postIngestFile(file: File): Promise<any> {
   return res.json();
 }
 
+export async function postIngestSample(fileType = 'csv'): Promise<any> {
+  const res = await fetch(`${API_BASE}/ingest/sample?file_type=${fileType}&run_pipeline=true`, {
+    method: 'POST',
+  });
+  if (!res.ok) throw new Error('Sample ingestion failed');
+  return res.json();
+}
+
 export async function postRunPipeline(): Promise<any> {
   const res = await fetch(`${API_BASE}/pipeline/run`, {
     method: 'POST',
@@ -140,3 +148,4 @@ export async function postRunPipeline(): Promise<any> {
   if (!res.ok) throw new Error('Pipeline execution failed');
   return res.json();
 }
+

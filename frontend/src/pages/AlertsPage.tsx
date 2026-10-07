@@ -113,7 +113,12 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({
               <option value="FAN_IN">Fan-In Consolidation</option>
               <option value="FAN_OUT">Fan-Out Dispersion</option>
               <option value="RAPID_LAYERING">Rapid Layering</option>
+              <option value="CIRCULAR_FLOW">Circular Flow</option>
+              <option value="DORMANT_ACTIVATION">Dormant Activation</option>
+              <option value="SUSPICIOUS_CONSOLIDATION">Suspicious Consolidation</option>
+              <option value="RAPID_SPLIT">Rapid Split</option>
             </select>
+
           </div>
         </div>
 

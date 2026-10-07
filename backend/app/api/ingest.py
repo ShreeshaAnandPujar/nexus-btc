@@ -49,9 +49,44 @@ async def ingest_file(
     return result
 
 
+@router.post("/ingest/sample", response_model=IngestResult)
+def ingest_sample(
+    file_type: str = "csv",
+    run_pipeline: bool = True,
+    db: Session = Depends(get_db),
+):
+    """
+    Ingest pre-packaged forensic sample dataset (CSV, JSON, XML) without file upload.
+    """
+    from pathlib import Path
+    from app.core.config import settings
+
+    filename = f"transactions_sample.{file_type.lower()}"
+    sample_path = settings.PROJECT_ROOT_PATH / "data" / "sample" / filename
+    if not sample_path.exists():
+        # Fallback to csv
+        sample_path = settings.PROJECT_ROOT_PATH / "data" / "sample" / "transactions_sample.csv"
+
+    with open(sample_path, "rb") as f:
+        content = f.read()
+
+    engine = IngestionEngine(db=db)
+    result = engine.ingest_content(
+        content=content,
+        source_name=sample_path.name,
+    )
+
+    if run_pipeline and result.records_valid > 0:
+        pipeline = ForensicPipeline(db=db)
+        pipeline.run_full_pipeline()
+
+    return result
+
+
 @router.post("/pipeline/run")
 def trigger_pipeline(db: Session = Depends(get_db)):
     """Trigger full 14-stage forensic analysis across all ingested transactions."""
     pipeline = ForensicPipeline(db=db)
     summary = pipeline.run_full_pipeline()
     return summary
+

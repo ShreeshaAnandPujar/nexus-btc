@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { Upload, Play, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
-import { postIngestFile, postRunPipeline } from '../services/api';
+import { Upload, Play, ShieldCheck, CheckCircle2, AlertCircle, Database } from 'lucide-react';
+import { postIngestFile, postIngestSample, postRunPipeline } from '../services/api';
 
 interface HeaderProps {
   onDataRefreshed: () => void;
@@ -33,6 +33,22 @@ export const Header: React.FC<HeaderProps> = ({
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
+
+  const handleLoadSample = async () => {
+    setIsProcessing(true);
+    setStatusMsg('Loading bundled forensic sample dataset...');
+    try {
+      const res = await postIngestSample('csv');
+      setStatusMsg(`Sample dataset loaded: ${res.records_valid} records analyzed.`);
+      onDataRefreshed();
+    } catch (err: any) {
+      setStatusMsg(`Sample load error: ${err.message}`);
+    } finally {
+      setIsProcessing(false);
+      setTimeout(() => setStatusMsg(null), 4000);
+    }
+  };
+
 
   const handleRunPipeline = async () => {
     setIsProcessing(true);
@@ -73,6 +89,16 @@ export const Header: React.FC<HeaderProps> = ({
         />
         <button
           className="btn-secondary"
+          onClick={handleLoadSample}
+          disabled={isProcessing}
+          title="Load pre-packaged forensic sample transactions (CSV)"
+        >
+          <Database size={14} />
+          <span>Load Sample</span>
+        </button>
+
+        <button
+          className="btn-secondary"
           onClick={() => fileInputRef.current?.click()}
           disabled={isProcessing}
           title="Upload CSV, JSON, or XML transaction file"
@@ -80,6 +106,7 @@ export const Header: React.FC<HeaderProps> = ({
           <Upload size={14} />
           <span>Ingest Data</span>
         </button>
+
 
         <button
           className="btn-primary"

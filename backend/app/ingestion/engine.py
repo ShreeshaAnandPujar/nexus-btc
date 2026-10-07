@@ -3,7 +3,9 @@
 import json
 import time
 import uuid
+import hashlib
 from pathlib import Path
+
 from typing import Any
 from sqlalchemy.orm import Session
 
@@ -165,14 +167,15 @@ class IngestionEngine:
             out_amts = record_dict.get("output_amounts", [])
 
             # Wallet-to-Wallet edges through transaction
-            for src_addr in in_addrs:
+            for src_idx, src_addr in enumerate(in_addrs):
                 if not src_addr:
                     continue
                 for dst_idx, dst_addr in enumerate(out_addrs):
                     if not dst_addr:
                         continue
                     amt = out_amts[dst_idx] if dst_idx < len(out_amts) else 0.0
-                    edge_id = f"{txid[:16]}_{src_addr[:8]}_{dst_addr[:8]}"
+                    edge_hash = hashlib.sha256(f"{src_addr}:{dst_addr}".encode()).hexdigest()[:8]
+                    edge_id = f"{txid[:16]}_{src_idx}_{dst_idx}_{edge_hash}"
                     edges_to_save.append(
                         GraphEdgeModel(
                             edge_id=edge_id,
@@ -190,7 +193,18 @@ class IngestionEngine:
             # Batch commit to prevent high memory usage
             if len(transactions_to_save) >= settings.BATCH_SIZE:
                 self.db.bulk_save_objects(transactions_to_save)
-                self.db.bulk_save_objects(edges_to_save)
+                if edges_to_save:
+                    # Deduplicate in batch and filter existing in DB
+                    dedup_edges = {e.edge_id: e for e in edges_to_save}
+                    eids = list(dedup_edges.keys())
+                    existing_eids = set(
+                        r[0] for r in self.db.query(GraphEdgeModel.edge_id).filter(
+                            GraphEdgeModel.edge_id.in_(eids)
+                        ).all()
+                    )
+                    filtered_edges = [e for eid, e in dedup_edges.items() if eid not in existing_eids]
+                    if filtered_edges:
+                        self.db.bulk_save_objects(filtered_edges)
                 self.db.commit()
                 transactions_to_save.clear()
                 edges_to_save.clear()
@@ -199,8 +213,18 @@ class IngestionEngine:
         if transactions_to_save:
             self.db.bulk_save_objects(transactions_to_save)
             if edges_to_save:
-                self.db.bulk_save_objects(edges_to_save)
+                dedup_edges = {e.edge_id: e for e in edges_to_save}
+                eids = list(dedup_edges.keys())
+                existing_eids = set(
+                    r[0] for r in self.db.query(GraphEdgeModel.edge_id).filter(
+                        GraphEdgeModel.edge_id.in_(eids)
+                    ).all()
+                )
+                filtered_edges = [e for eid, e in dedup_edges.items() if eid not in existing_eids]
+                if filtered_edges:
+                    self.db.bulk_save_objects(filtered_edges)
             self.db.commit()
+
 
         exec_time = round(time.time() - start_time, 4)
         logger.info(

@@ -155,23 +155,75 @@ This automated runner:
 
 ---
 
-## CLI Reference
+---
 
-NEXUS-BTC includes a built-in CLI utility:
+## CLI & Linux Terminal Console Reference
+
+NEXUS-BTC provides both a direct CLI utility and an **interactive Linux terminal console (`nexus-console`)** styled after **Metasploit Framework (`msfconsole`)** and **Zphisher** menu workflows:
+
+### 1. Interactive Metasploit-Style Console (`msfconsole`)
+Launch the modular forensic console shell with tab-completion, dynamic ASCII banners, and module context switching:
 
 ```bash
-# Ingest data and optionally run pipeline
-python -m nexus ingest data/sample/transactions_sample.json
-
-# Execute master forensic pipeline
-python -m nexus pipeline
-
-# Generate synthetic adversarial scenario (e.g. PEELING_CHAIN, FAN_IN, MIXING_LIKE)
-python -m nexus scenario PEELING_CHAIN
-
-# Launch web server
-python -m nexus serve --host 127.0.0.1 --port 8000
+# Launch interactive Metasploit console
+./nexus-console
+# or: python -m nexus console
 ```
+
+Inside the console:
+```text
+nexus-btc > show alerts
+nexus-btc > show motifs
+nexus-btc > show scenarios
+nexus-btc > use tracing/best_first
+nexus-btc (best_first) > show options
+nexus-btc (best_first) > set TARGET 7489170ee5b19babac1fc78a3d439a50079768ca8a0a3f97cd40493ab3af145e
+nexus-btc (best_first) > set HOPS 4
+nexus-btc (best_first) > run
+nexus-btc (best_first) > back
+nexus-btc > explain ALT-7489170E
+nexus-btc > exit
+```
+
+### 2. Interactive Zphisher-Style Menu Wizard
+Launch the numbered operator wizard:
+
+```bash
+# Launch Zphisher-style numbered wizard
+./nexus-console --menu
+# or: python -m nexus menu
+```
+
+Select operations `[01]` through `[12]` (e.g. `[01]` Run Pipeline, `[02]` Fund Tracer, `[03]` Deep Investigation, `[04]` Alert Queue, `[06]` SHAP Studio, `[07]` Adversarial Scenarios, `[11]` Web Server, `[00]` Exit).
+
+### 3. Direct Command-Line Invocations
+```bash
+# Fund Tracer (ASCII traversal path)
+./nexus-console trace 7489170ee5b19babac1fc78a3d439a50079768ca8a0a3f97cd40493ab3af145e 4 txid
+
+# Deep Transaction & Telemetry Investigation
+./nexus-console investigate 7489170ee5b19babac1fc78a3d439a50079768ca8a0a3f97cd40493ab3af145e
+
+# SHAP Attribution Waterfall & Counterfactuals
+./nexus-console explain ALT-7489170E
+
+# Generate & Ingest Synthetic Adversarial Scenario
+./nexus-console scenario MIXING_LIKE 15 42
+
+# Execute master 14-stage forensic pipeline
+./nexus-console pipeline
+
+# Ingest data (CSV / JSON / XML / sample)
+./nexus-console ingest sample
+./nexus-console ingest data/sample/transactions_sample.json
+
+# Check offline diagnostics and database status
+./nexus-console status
+
+# Launch offline web server
+./nexus-console serve --port 8000
+```
+
 
 ---
 
